@@ -35,43 +35,69 @@ const createManyPeople = (arrayOfPeople, done) => {
 };
 
 const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+  Person.find({name: personName}, (err, data) => {
+    if (err) return console.error(err);
+    done(err, data);
+  });
 };
 
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({favoriteFoods: food}, (err, data) => {
+    if (err) return console.error(err);
+    done(err, data);
+  });
 };
 
 const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findById(personId, (err, data) => {
+    if (err) return console.error(err);
+    done(err, data);
+  });
 };
 
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
-
-  done(null /*, data*/);
+  // finding the doc by id.
+   Person.findById(personId, (err, person) => {
+    if (err) return console.log(err);
+    //pushing food to the favorite foods array inside callback func().
+    person.favoriteFoods.push(foodToAdd);
+    // saving person doc back to database inside callback func().
+    person.save(function(err, updatedPerson) {
+      if (err) return console.log(err);
+      done(err, updatedPerson);
+    });
+});
 };
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
-
-  done(null /*, data*/);
+  Person.findOneAndUpdate({name: personName}, {age: ageToSet}, { new: true }, (err, data) => {
+    if (err) return console.error(err);
+    done(err, data);
+  });
 };
 
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findByIdAndRemove(personId, (err, data) => {
+    if (err) return console.error(err);
+    done(err, data);
+  });
 };
 
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
-
-  done(null /*, data*/);
+  Person.remove({name: nameToRemove}, (err, data) => {
+    if (err) return console.error(err);
+    done(err, data);
+  });
 };
 
 const queryChain = (done) => {
   const foodToSearch = "burrito";
-
-  done(null /*, data*/);
+  Person.find({favoriteFoods: foodToSearch}).sort('name').limit(2).select('-age').exec((err, data) => {
+    if (err) return console.error(err);
+    done(err, data);});
 };
 
 
@@ -96,4 +122,5 @@ exports.queryChain = queryChain;
 
 application.listen(8080, () =>
 console.log("running on port : 8080"));
+module.exports = application;
 
