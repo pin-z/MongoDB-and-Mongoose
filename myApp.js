@@ -4,7 +4,12 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 
-mongoose.connect("mongodb+srv://pinz:12345@cluster0.6t5zf.mongodb.net/?retryWrites=true&w=majority");
+mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+  () => console.log("Connection Successfull\n","Connection Status: ",mongoose.connection.readyState)).catch(
+    console.log("Database Error\n","Connection Status: ",mongoose.connection.readyState));
+
+
+
 
 const personSchema = new mongoose.Schema({
   name : { type : String, required: [true, "Name is required!"] },
@@ -17,12 +22,16 @@ const Person = mongoose.model('Person', personSchema);
 const createAndSavePerson = (done) => {
   let Ahmad = new Person({name :'Ahmad', age: 19, favoriteFood: ['mango', 'biryani']});
   Ahmad.save(function(err, data) {
+    if (err) return console.error(err);
     done(err, data);
   });
 };
 
 const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+  Person.create(arrayOfPeople,(function(err, data) {
+    if (err) return console.error(err);
+    done(err, data);
+  }));
 };
 
 const findPeopleByName = (personName, done) => {
@@ -87,3 +96,4 @@ exports.queryChain = queryChain;
 
 application.listen(8080, () =>
 console.log("running on port : 8080"));
+
